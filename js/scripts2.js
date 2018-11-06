@@ -37,9 +37,25 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
                   <p class="modal-text">Birthday: ${dob[1]}/${dob[2].slice(0, 2)}/${dob[0]}</p>
               </div>
           </div>
+          <div class="modal-btn-container">
+              <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+              <button type="button" id="modal-next" class="modal-next btn">Next</button>
+          </div>
         </div>
       `;
       $gallery.append(modelHTML);
+
+      if (selIndex === 0) {
+        $('#modal-prev').hide();
+      }
+      if (selIndex === 11) {
+        $('#modal-next').hide();
+      }
+
+      $('#modal-prev').click(function() {
+        selIndex -= 1;
+        $('modal-container').replaceWith(modelHTML);
+      });
       $('#modal-close-btn').click(function() {
         $('.modal-container').remove();
       }); // end btn click
