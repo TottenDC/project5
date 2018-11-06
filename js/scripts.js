@@ -38,6 +38,9 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
           </div>
       `;
       $gallery.append(modelHTML);
+      $('#modal-close-btn').click(function() {
+        $('.modal-container').remove();
+      }); // end btn click
     }); // end click
 
   });
