@@ -61,6 +61,7 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       $gallery.append(createModalHTML(selIndex));
       checkSelIndex(selIndex);
     }); // end click
+
     $gallery.click(function(event){
       if (event.target.textContent === 'X') {
         $('.modal-container').remove();
@@ -75,5 +76,30 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
         $('.modal-container').replaceWith(createModalHTML(selIndex));
         checkSelIndex(selIndex);
       }
-    });
+    }); // end click
+
+    $('.search-container').append(`
+      <form action="#" method="get">
+          <input type="search" id="search-input" class="search-input" placeholder="Search...">
+          <input type="submit" value="&#x1F50D;" id="serach-submit" class="search-submit">
+      </form>`
+    );
+
+    $('form').submit(function(event) {
+      event.preventDefault();
+      const $input = $('#search-input').val().toLowerCase();
+      const input = new RegExp ($input);
+      const query = document.querySelectorAll('h3[id^=name]');
+
+      $.each(query, function(index, person) {
+        let container = person.parentNode.parentNode;
+        if ($input === '') {
+          container.style.display = '';
+        } else if (input.test(person.innerHTML)){
+          container.style.display = '';
+        } else {
+          container.style.display = 'none';
+        }
+      }); // end $.each
+    }); // end submit
   });
