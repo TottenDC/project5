@@ -3,22 +3,8 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
   .then(response => response.json())
   .then(data => {
     console.log(data);
-    $.each(data.results, function(index, person) {
-      let contactHTML = `
-        <div class="card">
-            <div class="card-img-container">
-                <img class="card-img" src="${person.picture.large}" alt="profile picture">
-            </div>
-            <div class="card-info-container">
-                <h3 id="name-${index}" class="card-name cap">${person.name.first} ${person.name.last}</h3>
-                <p class="card-text">${person.email}</p>
-                <p class="card-text cap">${person.location.city}</p>
-            </div>
-        </div>`;
-      $gallery.append(contactHTML);
-    }); // end $.each
-    $('#gallery .card').click(function(event){
-      let selIndex = parseInt($(this).find('h3').attr('id').substring(5));
+    let selIndex = 0;
+    function createModalHTML(selIndex) {
       let selection = data.results[selIndex];
       let dob = selection.dob.date.split('-');
       let location = selection.location;
@@ -43,22 +29,51 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
           </div>
         </div>
       `;
-      $gallery.append(modelHTML);
+      return modelHTML;
+    }
 
+    function checkSelIndex(selIndex) {
       if (selIndex === 0) {
         $('#modal-prev').hide();
       }
       if (selIndex === 11) {
         $('#modal-next').hide();
       }
+    }
 
-      $('#modal-prev').click(function() {
-        selIndex -= 1;
-        $('modal-container').replaceWith(modelHTML);
-      });
-      $('#modal-close-btn').click(function() {
-        $('.modal-container').remove();
-      }); // end btn click
+    $.each(data.results, function(index, person) {
+      let contactHTML = `
+        <div class="card">
+            <div class="card-img-container">
+                <img class="card-img" src="${person.picture.large}" alt="profile picture">
+            </div>
+            <div class="card-info-container">
+                <h3 id="name-${index}" class="card-name cap">${person.name.first} ${person.name.last}</h3>
+                <p class="card-text">${person.email}</p>
+                <p class="card-text cap">${person.location.city}</p>
+            </div>
+        </div>`;
+      $gallery.append(contactHTML);
+    }); // end $.each
+
+    $('#gallery .card').click(function(){
+      selIndex = parseInt($(this).find('h3').attr('id').substring(5));
+      $gallery.append(createModalHTML(selIndex));
+      checkSelIndex(selIndex);
     }); // end click
-
+    $gallery.click(function(event){
+      if (event.target.textContent === 'X') {
+        $('.modal-container').remove();
+      }
+      if (event.target.textContent === 'Prev') {
+        selIndex -= 1;
+        $('.modal-container').replaceWith(createModalHTML(selIndex));
+        checkSelIndex(selIndex);
+      }
+      if (event.target.textContent === 'Next') {
+        selIndex += 1;
+        $('.modal-container').replaceWith(createModalHTML(selIndex));
+        checkSelIndex(selIndex);
+      }
+    });
   });
