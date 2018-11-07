@@ -1,9 +1,25 @@
+/*******************************
+Global Variables
+*******************************/
 const $gallery = $('#gallery');
+
+/*******************************
+API Request & Page Display
+*******************************/
+/**
+  * fetch request for random user information.
+  * Response is parsed from JSON into data object
+  * and given to main function for manipulation.
+*/
 fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
   .then(response => response.json())
   .then(data => {
-    console.log(data);
     let selIndex = 0;
+
+/**
+  * Creates the HTML markup for creation of modal window from a specific user.
+  * @param number Index position for array of user objects retrieved from API
+*/
     function createModalHTML(selIndex) {
       let selection = data.results[selIndex];
       let dob = selection.dob.date.split('-');
@@ -32,6 +48,10 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       return modelHTML;
     }
 
+/**
+  * Checks the position of the user and hides modal window buttons if on beginning or end.
+  * @param number Index position for array of dynamically appended user divs.
+*/
     function checkSelIndex(selIndex) {
       if (selIndex === 0) {
         $('#modal-prev').hide();
@@ -41,6 +61,9 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       }
     }
 
+/**
+ * Loops through data from API and creates/appends divs to display basic information.
+*/
     $.each(data.results, function(index, person) {
       let contactHTML = `
         <div class="card">
@@ -56,12 +79,21 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       $gallery.append(contactHTML);
     }); // end $.each
 
+/**
+  * Uses index of data object embedded in user div to create a modal window
+  * with additional information when a user card is clicked.
+*/
     $('#gallery .card').click(function(){
       selIndex = parseInt($(this).find('h3').attr('id').substring(5));
       $gallery.append(createModalHTML(selIndex));
       checkSelIndex(selIndex);
     }); // end click
 
+/**
+  * "Global" click event handler to respond to modal button clicks.
+  * 1. Closes the modal window.
+  * 2 and 3. Creates new modal window for previous or next user.
+*/
     $gallery.click(function(event){
       if (event.target.textContent === 'X') {
         $('.modal-container').remove();
@@ -78,6 +110,9 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       }
     }); // end click
 
+/**
+  * Creates and appends a search bar to DOM.
+*/
     $('.search-container').append(`
       <form action="#" method="get">
           <input type="search" id="search-input" class="search-input" placeholder="Search...">
@@ -85,6 +120,11 @@ fetch('https://randomuser.me/api/?results=12&nat=us,nz,gb,au')
       </form>`
     );
 
+/**
+  * Sumbit event handler to search through the displayed users and hide those
+  * that do not match.
+  * Uses regexp test() method to check for match between name and input.
+*/
     $('form').submit(function(event) {
       event.preventDefault();
       const $input = $('#search-input').val().toLowerCase();
